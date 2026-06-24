@@ -91,7 +91,7 @@
 
         <!-- 全範囲挑戦ボタン -->
         <div class="pt-2">
-            <button onclick="startQuiz(8)" class="w-full relative group overflow-hidden bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black p-4 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 flex justify-between items-center cursor-pointer">
+            <button onclick="(8)" class="w-full relative group overflow-hidden bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black p-4 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 flex justify-between items-center cursor-pointer">
                 <div class="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:animate-[shine_0.8s_ease-in-out]"></div>
                 <div class="flex items-center gap-2.5 text-left">
                     <div class="bg-slate-950/20 p-2 rounded-xl">
@@ -670,7 +670,7 @@
         for (let i = 1; i <= 7; i++) {
             const currentProgress = modeProgress[i] || 0;
             const buttonHtml = `
-                <button onclick="startQuiz(${i})" class="w-full text-left p-4 rounded-2xl bg-slate-800/40 hover:bg-slate-800 hover:scale-[1.01] border border-slate-800 hover:border-amber-500/30 transition-all duration-200 group flex justify-between items-center cursor-pointer">
+                <button onclick="(${i})" class="w-full text-left p-4 rounded-2xl bg-slate-800/40 hover:bg-slate-800 hover:scale-[1.01] border border-slate-800 hover:border-amber-500/30 transition-all duration-200 group flex justify-between items-center cursor-pointer">
                     <div class="space-y-1">
                         <span class="block font-bold text-slate-200 text-sm sm:text-base group-hover:text-amber-400 transition-colors">${modeNames[i]}</span>
                         <div class="flex items-center gap-2">
@@ -976,7 +976,7 @@
 
     // やり直しと戻る
     function restartCurrentMode() {
-        startQuiz(activeMode);
+        (activeMode);
     }
 
     function backToMenu() {
