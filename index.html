@@ -29,13 +29,11 @@
     <div class="absolute -top-40 -left-40 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
     <div class="absolute -bottom-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-    <!-- 認証待ち・ローディングオーバーレイ -->
     <div id="loading-overlay" class="absolute inset-0 bg-slate-950/80 z-50 flex flex-col items-center justify-center fade-in">
         <i data-lucide="loader-2" class="w-12 h-12 text-amber-500 animate-spin mb-4"></i>
         <p class="text-slate-300 font-bold">システムに接続中...</p>
     </div>
 
-    <!-- ヘッダー -->
     <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4 relative z-10">
         <div class="flex items-center gap-2">
             <div class="bg-amber-500 text-slate-950 p-2 rounded-xl shadow-lg">
@@ -54,10 +52,8 @@
         </div>
     </div>
 
-    <!-- 1. メニュー画面 -->
     <div id="menu-screen" class="space-y-6 relative z-10 hidden">
         
-        <!-- オンライン対戦機能 -->
         <div class="bg-gradient-to-r from-emerald-900/40 to-slate-800/40 border border-emerald-500/30 p-5 rounded-2xl">
             <div class="flex items-center gap-2 mb-4">
                 <i data-lucide="swords" class="w-6 h-6 text-emerald-400"></i>
@@ -78,7 +74,6 @@
             </div>
         </div>
 
-        <!-- シングルプレイ設定 -->
         <div class="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50 flex flex-col sm:flex-row justify-between items-center gap-4">
             <h2 class="font-bold text-slate-200 flex items-center gap-1.5 text-sm"><i data-lucide="user" class="w-4 h-4 text-amber-500"></i> 一人プレイ設定</h2>
             <div class="flex items-center gap-4 w-full sm:w-auto">
@@ -93,20 +88,17 @@
             </div>
         </div>
 
-        <!-- モード選択 -->
         <div>
             <h2 class="text-base font-extrabold text-slate-300 mb-3 flex items-center gap-2"><i data-lucide="book-open" class="w-5 h-5 text-amber-400"></i> 出題範囲（一人プレイ）</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar" id="modes-list">
-                <!-- 動的生成 -->
-            </div>
+                </div>
         </div>
         <button onclick="startSingleQuiz(8)" class="w-full relative group overflow-hidden bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black p-4 rounded-2xl transition-all hover:shadow-xl hover:shadow-amber-500/20 flex justify-between items-center">
-            <span class="block text-base font-black flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5"></i> 第8モード：全範囲ランダム（無限特訓）</span>
+            <span class="block text-base font-black flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5"></i> 第8モード：全範囲ランダム（無限）</span>
             <i data-lucide="arrow-right" class="w-6 h-6"></i>
         </button>
     </div>
 
-    <!-- 2. 対戦ロビー画面 -->
     <div id="lobby-screen" class="hidden space-y-6 relative z-10 fade-in">
         <div class="flex justify-between items-center border-b border-slate-800 pb-3">
             <h2 class="text-xl font-black text-emerald-400 flex items-center gap-2"><i data-lucide="radio" class="w-6 h-6 animate-pulse"></i> 対戦ロビー</h2>
@@ -117,15 +109,12 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- 参加者リスト -->
             <div class="bg-slate-800/40 rounded-2xl border border-slate-700/50 p-4">
                 <h3 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2"><i data-lucide="users" class="w-4 h-4"></i> 参加者 (<span id="lobby-player-count">1</span>人)</h3>
                 <ul id="lobby-players-list" class="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar">
-                    <!-- 動的生成 -->
-                </ul>
+                    </ul>
             </div>
 
-            <!-- ホスト設定パネル -->
             <div class="bg-slate-800/40 rounded-2xl border border-slate-700/50 p-4 space-y-3 relative">
                 <div id="lobby-guest-overlay" class="absolute inset-0 bg-slate-900/50 z-10 hidden flex items-center justify-center rounded-2xl backdrop-blur-sm">
                     <span class="bg-slate-800 px-4 py-2 rounded-xl text-xs font-bold text-emerald-400 border border-emerald-500/30">ホストが設定中です...</span>
@@ -135,7 +124,7 @@
                 <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-700">
                     <span class="text-xs font-bold text-slate-400">対戦形式</span>
                     <select id="lobby-game-type" onchange="updateRoomSettings()" class="bg-slate-800 text-amber-400 text-xs font-bold px-2 py-1 rounded outline-none border border-slate-700">
-                        <option value="count">問題数 型（早解き競争）</option>
+                        <option value="count">問題数 型（早解き）</option>
                         <option value="time">時間制限 型（スコア競争）</option>
                     </select>
                 </div>
@@ -149,7 +138,7 @@
                 </div>
                 <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-700">
                     <span class="text-xs font-bold text-slate-400">1問の制限時間 (秒)</span>
-                    <input type="number" id="lobby-q-time" value="20" min="5" max="60" onchange="updateRoomSettings()" class="bg-slate-800 text-amber-400 text-xs font-bold px-2 py-1 rounded outline-none border border-slate-700 w-16 text-center">
+                    <input type="number" id="lobby-q-time" value="30" min="5" max="60" onchange="updateRoomSettings()" class="bg-slate-800 text-amber-400 text-xs font-bold px-2 py-1 rounded outline-none border border-slate-700 w-16 text-center">
                 </div>
                 <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-700">
                     <span class="text-xs font-bold text-slate-400">出題範囲</span>
@@ -174,35 +163,26 @@
         </div>
     </div>
 
-    <!-- 3. クイズプレイ画面 -->
     <div id="play-screen" class="hidden space-y-4 relative z-10 fade-in">
         
-        <!-- マルチプレイ：参加人数とスコアボード -->
-        <div id="multi-scoreboard" class="hidden mb-2">
-            <h3 class="text-emerald-400 font-bold text-xs mb-1 flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i> 現在の参加状況（<span id="in-game-player-count">1</span>人）</h3>
-            <div id="multi-scoreboard-list" class="bg-slate-900/80 border border-emerald-500/30 p-2 rounded-xl overflow-x-auto custom-scrollbar flex gap-2 items-center">
-                <!-- 動的生成 -->
+        <div id="multi-scoreboard" class="hidden bg-slate-900/80 border border-emerald-500/30 p-2 rounded-xl overflow-x-auto custom-scrollbar flex gap-2 items-center mb-2">
             </div>
-        </div>
 
-        <!-- 全体進行＆スコアヘッダー -->
         <div class="flex flex-col sm:flex-row justify-between items-stretch gap-2">
             <div class="bg-slate-850 px-4 py-3 rounded-2xl border border-slate-800 flex justify-between items-center flex-1">
                 <div class="flex items-center gap-2">
                     <span id="quiz-mode-badge" class="text-xs font-black text-amber-400 bg-amber-400/10 px-2 py-1 rounded-lg border border-amber-500/20">モード</span>
-                    <!-- 全体タイマー(時間制限型用) -->
-                    <span id="global-timer-badge" class="hidden text-xs font-bold text-rose-400 bg-rose-400/10 px-2 py-1 rounded-lg flex items-center gap-1 border border-rose-500/30 shadow-sm shadow-rose-500/20">
+                    <span id="global-timer-badge" class="hidden text-xs font-bold text-rose-400 bg-rose-400/10 px-2 py-1 rounded-lg flex items-center gap-1 border border-rose-500/30">
                         <i data-lucide="alarm-clock" class="w-3.5 h-3.5"></i> 残り <span id="global-timer-sec">0</span>秒
                     </span>
                 </div>
                 <span id="quiz-progress" class="text-xs text-slate-400 font-mono font-bold">1問目</span>
             </div>
             
-            <!-- スコア＆コンボ -->
-            <div class="bg-gradient-to-r from-amber-600/20 to-orange-600/20 px-4 py-2 rounded-2xl border border-amber-500/30 flex justify-between items-center sm:min-w-[220px]">
+            <div class="bg-gradient-to-r from-amber-600/20 to-orange-600/20 px-4 py-2 rounded-2xl border border-amber-500/30 flex justify-between items-center sm:min-w-[200px]">
                 <div>
                     <span class="block text-[10px] text-amber-500/80 font-bold uppercase tracking-wider">SCORE</span>
-                    <span id="score-display" class="text-2xl font-black text-amber-400 font-mono drop-shadow-sm">0<span class="text-sm">pt</span></span>
+                    <span id="score-display" class="text-xl font-black text-amber-400 font-mono">0<span class="text-sm">pt</span></span>
                 </div>
                 <div id="combo-display" class="text-sm font-black text-orange-400 opacity-50 transition-all">
                     0 Combo
@@ -210,20 +190,17 @@
             </div>
         </div>
 
-        <!-- 1問用タイマー -->
-        <div id="timer-bar-container" class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden relative">
-            <div id="timer-bar" class="h-full bg-amber-500 transition-all duration-100 ease-linear" style="width: 100%"></div>
+        <div id="timer-bar-container" class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+            <div id="timer-bar" class="h-full bg-amber-500 transition-all duration-100" style="width: 100%"></div>
         </div>
 
-        <!-- 問題 -->
         <div class="bg-slate-800/40 p-5 rounded-2xl border border-slate-800/80 relative min-h-[100px] flex items-center">
             <span class="absolute -top-3 left-6 px-3 py-0.5 bg-slate-900 border border-slate-800 rounded-full text-[10px] font-bold text-slate-400">Question</span>
             <p id="quiz-question" class="text-base sm:text-lg font-bold leading-relaxed text-slate-100"></p>
         </div>
 
-        <!-- 入力 -->
         <div class="space-y-3">
-            <label class="block text-xs font-bold text-slate-400">あなたの解答 (ひらがな・漢字のブレも自動判定します)：</label>
+            <label class="block text-xs font-bold text-slate-400">あなたの解答 (平仮名も自動判定)：</label>
             <div class="flex flex-col sm:flex-row gap-2">
                 <input type="text" id="user-answer" placeholder="解答を入力..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-amber-500 outline-none font-medium" autocomplete="off" onkeydown="handleEnterKey(event)">
                 <button id="submit-btn" onclick="submitUserAnswer()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-8 py-3 rounded-xl transition-all shadow-lg whitespace-nowrap">
@@ -232,49 +209,40 @@
             </div>
         </div>
 
-        <!-- フィードバック -->
         <div id="feedback-panel" class="hidden p-4 rounded-2xl border transition-all fade-in">
             <div class="flex items-start gap-3">
-                <span id="feedback-icon" class="text-2xl mt-1">⭕</span>
+                <span id="feedback-icon" class="text-2xl">⭕</span>
                 <div class="space-y-1 w-full">
                     <div class="flex justify-between items-start gap-2">
                         <div>
-                            <h3 id="feedback-title" class="font-extrabold text-lg leading-none">正解！</h3>
-                            <div id="feedback-point" class="mt-1"></div>
+                            <h3 id="feedback-title" class="font-extrabold text-lg">正解！</h3>
+                            <span id="feedback-point" class="text-xs font-bold font-mono">+0pt</span>
                         </div>
                         <button id="override-btn" onclick="overrideAsCorrect()" class="text-[10px] font-bold bg-slate-850 hover:bg-slate-800 text-slate-300 border border-slate-700 rounded-lg px-2 py-1 transition-all flex items-center gap-1 hidden">
                             <i data-lucide="check-square" class="w-3 h-3 text-amber-500"></i>正解にする
                         </button>
                     </div>
-                    <p id="feedback-correct-answers" class="text-sm font-bold text-white mt-1"></p>
+                    <p id="feedback-correct-answers" class="text-sm font-bold text-white"></p>
                     <p id="feedback-explanation" class="text-xs text-slate-300 pt-2 border-t border-white/10 mt-2"></p>
                 </div>
             </div>
         </div>
 
-        <!-- 次へ / 待機 -->
         <div class="flex justify-end pt-2">
-            <button id="next-btn" onclick="goToNextQuestion()" class="hidden w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white font-bold px-8 py-3 rounded-xl border border-slate-700 flex items-center justify-center gap-2 transition-all">
+            <button id="next-btn" onclick="goToNextQuestion()" class="hidden w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white font-bold px-8 py-3 rounded-xl border border-slate-700 flex items-center justify-center gap-2">
                 <span id="next-btn-text">次の問題へ</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
         </div>
     </div>
 
-    <!-- 4. リザルト画面 -->
     <div id="result-screen" class="hidden text-center py-6 space-y-6 relative z-10 fade-in">
         <h2 class="text-2xl font-black text-slate-100 border-b border-slate-800 pb-2">最終結果発表</h2>
         
-        <!-- マルチプレイ：ランキング表示 -->
         <div id="result-multi-ranking" class="hidden max-w-md mx-auto space-y-2">
-            <h3 class="text-emerald-400 font-bold text-sm mb-2 text-left border-b border-emerald-500/30 pb-1">参加者ランキング (<span id="result-player-count"></span>人)</h3>
-            <div id="result-ranking-list" class="space-y-2">
-                <!-- 動的生成 -->
             </div>
-        </div>
 
-        <!-- シングル・個人成績 -->
         <div id="result-single-stats" class="max-w-sm mx-auto space-y-4">
-            <div class="bg-gradient-to-r from-amber-600/20 to-orange-600/20 border border-amber-500/30 rounded-2xl p-6 shadow-inner">
+            <div class="bg-gradient-to-r from-amber-600/20 to-orange-600/20 border border-amber-500/30 rounded-2xl p-6">
                 <span class="block text-amber-500 text-xs font-bold mb-1">獲得トータルスコア</span>
                 <span id="result-final-score" class="text-5xl font-black text-amber-400 font-mono drop-shadow-md">0</span>
                 <span class="text-sm text-amber-500 font-bold ml-1">pt</span>
@@ -292,7 +260,7 @@
         </div>
 
         <div class="pt-6 flex justify-center">
-            <button onclick="leaveToMenu()" class="bg-slate-800 hover:bg-slate-700 text-white font-extrabold px-8 py-3 rounded-xl border border-slate-700 w-full sm:w-auto transition-all shadow-lg">
+            <button onclick="leaveToMenu()" class="bg-slate-800 hover:bg-slate-700 text-white font-extrabold px-8 py-3 rounded-xl border border-slate-700 w-full sm:w-auto transition-all">
                 メニューに戻る
             </button>
         </div>
@@ -305,40 +273,42 @@
     import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
-    // ユーザー提供のFirebaseコンフィグ
-    const firebaseConfig = {
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
         apiKey: "AIzaSyDicI5O04YZ-xKC65QdLspvBTcEc9CYlQ0",
         authDomain: "kanisns.firebaseapp.com",
-        projectId: "kanisns",
-        storageBucket: "kanisns.firebasestorage.app",
-        messagingSenderId: "1030418349019",
-        appId: "1:1030418349019:web:f617614762aec2105185fe",
-        measurementId: "G-9HPZWC0E62"
+        projectId: "kanisns"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    
-    // システムルールに沿った一意のアプリIDパスを構成
-    const appId = 'history-quiz-multi-v2';
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'history-quiz-app';
+
     let myUid = "local_guest";
     
     // Auth Initialization
     const initAuth = async () => {
         try {
-            const cred = await signInAnonymously(auth);
-            myUid = cred.user.uid;
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                const cred = await signInWithCustomToken(auth, __initial_auth_token);
+                myUid = cred.user.uid;
+            } else {
+                const cred = await signInAnonymously(auth);
+                myUid = cred.user.uid;
+            }
             document.getElementById('loading-overlay').classList.add('hidden');
             document.getElementById('menu-screen').classList.remove('hidden');
             drawMenu();
         } catch (e) {
             console.error("Auth error", e);
-            document.getElementById('loading-overlay').innerHTML = "<p class='text-rose-500 font-bold'>認証に失敗しました。Firebaseのセキュリティルールを確認してください。</p>";
+            document.getElementById('loading-overlay').innerHTML = "<p class='text-rose-500 font-bold'>認証エラーが発生しました。</p>";
         }
     };
     initAuth();
 
+    function getRoomsRef() {
+        return collection(db, 'artifacts', appId, 'public', 'data', 'rooms');
+    }
     function getRoomDoc(roomId) {
         return doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
     }
@@ -400,7 +370,7 @@
             { q: "1894年、イギリスとの間で領事裁判権（治外法権）の撤廃に成功した外務大臣は誰か？", ans: ["陸奥宗光", "むつむねみつ"], exp: "日清戦争直前の外交的勝利です。" },
             { q: "陸奥宗光が領事裁判権の撤廃に成功した「日英通商航海条約」は何年に結ばれたか？", ans: ["1894年", "1894"], exp: "半世紀ぶりの悲願達成の一部です。" },
             { q: "日清戦争後に結ばれた講和条約（下関条約）で、日本が割譲を受けた半島はどこか？", ans: ["遼東半島", "りょうとうはんとう", "リャオトン"], exp: "しかし直後に三国干渉を受けます。" },
-            { q: "1895年、下関条約の直後にロシア・フランス・ドイツが遼東半島の返還を迫った事件は？", ans: ["三国干渉", "さんごくかんしょう"], exp: "日本は臥薪嘗胆を誓い、ロシアへの敵意を強めました。" },
+            { q: "1895年、下関条約の直後にロシア・フランス・ドイツが遼東半島の返還を迫った事件は？", ans: ["三国干渉", "さんごくかんしょう"], exp: "日本は臥薪嘗胆を誓い、ロシアへの敵意を強めしました。" },
             { q: "1902年、ロシアのアジア進出に対抗するため、日本がイギリスと結んだ同盟は何か？", ans: ["日英同盟", "にちえいどうめい"], exp: "これにより日本は日露戦争への後ろ盾を得ました。" },
             { q: "1905年、日露戦争の講和条約（ポーツマス条約）で賠償金が取れず、東京で起きた暴動は何か？", ans: ["日比谷焼き打ち事件", "ひびややきうちじけん"], exp: "国民の強い不満が爆発しました。" },
             { q: "1911年、関税自主権の完全回復に成功し、不平等条約の改正を完了させた外務大臣は誰か？", ans: ["小村寿太郎", "こむらじゅたろう"], exp: "日本の法的な完全独立が達成されました。" },
@@ -424,13 +394,13 @@
             { q: "第一次世界大戦の直接の契機となったサラエボ事件が起きたのは西暦何年か？", ans: ["1914年", "1914"], exp: "1918年まで続く未曾有の総力戦の始まりです。" },
             { q: "1915年、日本が中国の袁世凱政府に対して突きつけた不当な利権要求は何か？", ans: ["二十一か条の要求", "にじゅういちかじょうのようきゅう"], exp: "ヨーロッパ大戦の隙を突いて行われました。" },
             { q: "1917年、労働者が蜂起し帝政を倒し、世界初の社会主義政権誕生へつながった革命は何か？", ans: ["ロシア革命", "ろしあかくめい"], exp: "レーニンが指導しました。" },
-            { q: "1919年、敗戦国ドイツに対し巨額の賠償金を強いた講和条約は何か？", ans: ["ベルサイユ条約", "べるさいゆじょうやく"], exp: "ドイツの強い不満を生みました。" },
+            { q: "1919年、敗戦国ドイツに対し巨額 of 賠償金を強いた講和条約は何か？", ans: ["ベルサイユ条約", "べるさいゆじょうやく"], exp: "ドイツの強い不満を生みました。" },
             { q: "1920年、ウィルソン大統領が提唱して発足した史上初の国際平和機構は何か？", ans: ["国際連盟", "こくさいれんめい"], exp: "提唱国のアメリカは議会の反対で不参加でした。" },
             { q: "大正時代、一般民衆の意向を政治に反映させるべきとした、吉野作造の思想は何か？", ans: ["民本主義", "みんぽんしゅぎ"], exp: "大正デモクラシーの理論的支柱です。" },
             { q: "1918年、米価高騰に怒った富山県の主婦らの抗議から全国へ波及した暴動事件は何か？", ans: ["米騒動", "こめそうどう"], exp: "寺内正毅内閣が総辞職しました。" },
             { q: "1918年、米騒動のあとに日本初の本格的な政党内閣を組織した「平民宰相」は誰か？", ans: ["原敬", "はらたかし", "はらけい"], exp: "立憲政友会総裁として首相になりました。" },
             { q: "1920年、平塚らいてうや市川房枝らが設立し、女性参政権を求めた組織は何か？", ans: ["新婦人協会", "しんふじんきょうかい"], exp: "女性の政治活動の自由を求めました。" },
-            { q: "1922年、被差別部落の解放と平等を求めて結成された人権運動組織は何か？", ans: ["全国水平社", "ぜんこくすいへいしゃ"], exp: "「人の世に熱あれ、人間に光あれ」と宣言しました。" },
+            { q: "1922年、被差別部落の解放と平点を求めて結成された人権運動組織は何か？", ans: ["全国水平社", "ぜんこくすいへいしゃ"], exp: "「人の世に熱あれ、人間に光あれ」と宣言しました。" },
             { q: "1925年、満25歳以上のすべての男子に参政権を与えた法律は何か？", ans: ["普通選挙法", "ふつうせんきょほう"], exp: "納税額による制限が撤廃されました。" },
             { q: "1925年、普通選挙法と同時に制定され、社会主義思想などを弾圧した法律は何か？", ans: ["治安維持法", "ちあんいじほう"], exp: "国体の変革を企てる者を厳罰に処しました。" },
             { q: "普通選挙法および治安維持法が制定されたのは、ともに西暦何年か？", ans: ["1925年", "1925"], exp: "ラジオ放送が開始されたのも同じ年です。" },
@@ -471,7 +441,7 @@
         if (!str) return "";
         let val = str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
         val = val.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60));
-        return val.replace(/[\s　、。]/g, "").replace(/ねん$/, "").replace(/年$/, "").toLowerCase();
+        return val.replace(/[\s 、。]/g, "").replace(/ねん$/, "").replace(/年$/, "").toLowerCase();
     }
     function switchScreen(hideId, showId) {
         document.getElementById(hideId).classList.add('hidden');
@@ -494,6 +464,7 @@
     let qTimerId = null;
     let qTimerMax = 30;
     let qTimerVal = 30;
+    
     let gTimerId = null;
     let gTimerMax = 0;
     let gTimerVal = 0;
@@ -538,10 +509,7 @@
         let pool = [];
         if (mode === 8) {
             for(let m in quizDatabase) pool = pool.concat(quizDatabase[m]);
-            pool.sort(()=>Math.random()-0.5);
-            // ランダム無限は100問用意する（不足すればループ）
-            activeQuestions = [];
-            for(let i=0; i<100; i++) activeQuestions.push(pool[i % pool.length]); 
+            activeQuestions = pool.sort(()=>Math.random()-0.5).slice(0, 100);
             document.getElementById('quiz-mode-badge').textContent = "ランダム特訓";
         } else {
             activeQuestions = [...quizDatabase[mode]].sort(()=>Math.random()-0.5);
@@ -569,7 +537,7 @@
             await setDoc(getRoomDoc(roomId), {
                 hostUid: myUid,
                 status: 'waiting',
-                settings: { gameType: 'count', maxQuestions: 10, totalTime: 120, timePerQ: 20, quizMode: "8" },
+                settings: { gameType: 'count', maxQuestions: 10, totalTime: 180, timePerQ: 30, quizMode: "8" },
                 players: { [myUid]: { name: myPlayerName, score: 0, combo: 0, progress: 0, isFinished: false } },
                 questions: "[]",
                 createdAt: serverTimestamp()
@@ -620,15 +588,24 @@
             roomSettings = data.settings;
             roomPlayers = data.players || {};
             
+            // 参加者リスト更新（ソート処理を追加）
             const listEl = document.getElementById('lobby-players-list');
             listEl.innerHTML = "";
+            
+            const sortedPlayers = Object.entries(roomPlayers).sort((a, b) => {
+                if (a[0] === data.hostUid) return -1;
+                if (b[0] === data.hostUid) return 1;
+                return a[1].name.localeCompare(b[1].name);
+            });
+
             let pCount = 0;
-            for(let uid in roomPlayers) {
+            sortedPlayers.forEach(([uid, player]) => {
                 pCount++;
                 const isMe = uid === myUid ? " (あなた)" : "";
                 const isHostIcon = uid === data.hostUid ? `<i data-lucide="crown" class="w-3 h-3 text-amber-400"></i>` : "";
-                listEl.innerHTML += `<li class="bg-slate-900 px-3 py-2 rounded-lg text-sm text-slate-300 font-bold border border-slate-700 flex items-center gap-2">${isHostIcon} ${escapeHTML(roomPlayers[uid].name)} <span class="text-emerald-500">${isMe}</span></li>`;
-            }
+                listEl.innerHTML += `<li class="bg-slate-900 px-3 py-2 rounded-lg text-sm text-slate-300 font-bold border border-slate-700 flex items-center gap-2">${isHostIcon} ${escapeHTML(player.name)} <span class="text-emerald-500">${isMe}</span></li>`;
+            });
+            
             document.getElementById('lobby-player-count').textContent = pCount;
             lucide.createIcons();
 
@@ -677,7 +654,6 @@
         }
     }
 
-    // ゲームの抽選と開始（ホストが全問題を抽選・配布して同じ問題にする）
     window.startMultiplayerGame = async function() {
         playSound('click');
         const m = roomSettings.quizMode;
@@ -686,12 +662,8 @@
         else { pool = [...quizDatabase[m]]; }
         pool.sort(()=>Math.random()-0.5);
         
-        // 問題数型の場合は指定数。時間制限型の場合は多め（300問）に用意する
-        const qCount = roomSettings.gameType === 'count' ? roomSettings.maxQuestions : 300;
-        const selected = [];
-        for(let i=0; i<qCount; i++) {
-            selected.push(pool[i % pool.length]); // データベースの問題数が少なくてもループして補う
-        }
+        const qCount = roomSettings.gameType === 'count' ? roomSettings.maxQuestions : 100;
+        const selected = pool.slice(0, Math.min(qCount, pool.length));
 
         try {
             await updateDoc(getRoomDoc(currentRoomId), {
@@ -728,7 +700,6 @@
         switchScreen('lobby-screen', 'menu-screen');
     };
 
-    // --- 3. クイズ進行ロジック ---
     function loadQuestion() {
         if(qTimerId) clearInterval(qTimerId);
         document.getElementById('feedback-panel').classList.add('hidden');
@@ -737,7 +708,6 @@
         
         const ansInput = document.getElementById('user-answer');
         ansInput.value = ""; ansInput.disabled = false; ansInput.focus();
-        document.getElementById('next-btn-text').textContent = "次の問題へ";
         
         document.getElementById('quiz-progress').textContent = `${activeIndex + 1} 問目`;
         document.getElementById('quiz-question').textContent = activeQuestions[activeIndex].q;
@@ -755,14 +725,13 @@
     function startQTimer() {
         qTimerVal = qTimerMax;
         document.getElementById('timer-bar').style.width = "100%";
-        document.getElementById('timer-bar').className = "h-full bg-amber-500 transition-all ease-linear";
+        document.getElementById('timer-bar').className = "h-full bg-amber-500 transition-all";
         
         qTimerId = setInterval(() => {
-            qTimerVal -= 0.1; // 滑らかに減らすために0.1秒単位で更新
-            const pct = (qTimerVal / qTimerMax) * 100;
-            document.getElementById('timer-bar').style.width = `${Math.max(0, pct)}%`;
+            qTimerVal--;
+            document.getElementById('timer-bar').style.width = `${(qTimerVal/qTimerMax)*100}%`;
             if (qTimerVal <= 0) { clearInterval(qTimerId); processAnswer(false, true); }
-        }, 100);
+        }, 1000);
     }
 
     function startGlobalTimer() {
@@ -772,13 +741,12 @@
             document.getElementById('global-timer-sec').textContent = gTimerVal;
             if(gTimerVal <= 0) {
                 clearInterval(gTimerId);
-                finishMultiGameSelf(); 
+                finishMultiGameSelf();
             }
         }, 1000);
     }
 
     window.submitUserAnswer = function() {
-        if(document.getElementById('user-answer').disabled) return; // 連打防止
         const userInput = document.getElementById('user-answer').value.trim();
         if (!userInput) return;
         if(qTimerId) clearInterval(qTimerId);
@@ -801,28 +769,24 @@
             correctCount++; currentCombo++;
             if(currentCombo > maxCombo) maxCombo = currentCombo;
             
-            // スコア：基本点100 + タイムボーナス(最大100) × コンボ倍率
-            const timeBonus = qTimerMax > 0 ? Math.floor((Math.max(0, qTimerVal) / qTimerMax) * 100) : 0;
-            const basePoint = 100 + timeBonus;
-            const comboMultiplier = 1.0 + (Math.max(0, currentCombo - 1) * 0.2); // 1.0倍, 1.2倍, 1.4倍...とインフレ
-            pointEarned = Math.floor(basePoint * comboMultiplier);
+            const timeBonus = qTimerMax > 0 ? Math.floor((qTimerVal / qTimerMax) * 100) : 0;
+            const comboBonus = currentCombo * 50;
+            pointEarned = 100 + timeBonus + comboBonus;
             totalScore += pointEarned;
 
             fp.className = "p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
             document.getElementById('feedback-icon').textContent = "⭕";
             document.getElementById('feedback-title').textContent = "正解！";
-            document.getElementById('feedback-point').innerHTML = `
-                <span class="text-base font-black font-mono text-emerald-400 combo-anim inline-block ml-2">+${pointEarned}pt</span>
-                <span class="text-[10px] text-slate-400 block ml-2">基本+TIME:${basePoint}pt × コンボ:${comboMultiplier.toFixed(1)}倍</span>
-            `;
+            document.getElementById('feedback-point').textContent = `+${pointEarned}pt`;
+            document.getElementById('feedback-point').className = "text-sm font-black font-mono text-emerald-400 combo-anim inline-block ml-2";
             document.getElementById('override-btn').classList.add('hidden');
         } else {
             playSound('incorrect');
-            currentCombo = 0; 
+            currentCombo = 0;
             fp.className = "p-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-300";
             document.getElementById('feedback-icon').textContent = isTimeout ? "⏰" : "❌";
             document.getElementById('feedback-title').textContent = isTimeout ? "時間切れ..." : "不正解...";
-            document.getElementById('feedback-point').innerHTML = "";
+            document.getElementById('feedback-point').textContent = "";
             if(!isTimeout) document.getElementById('override-btn').classList.remove('hidden');
         }
 
@@ -851,16 +815,14 @@
     window.overrideAsCorrect = function() {
         playSound('correct'); 
         correctCount++; currentCombo++; if(currentCombo > maxCombo) maxCombo = currentCombo;
-        
-        const basePoint = 100; // 救済時はタイムボーナスなし
-        const comboMultiplier = 1.0 + (Math.max(0, currentCombo - 1) * 0.2);
-        const pointEarned = Math.floor(basePoint * comboMultiplier);
+        const pointEarned = 100 + (currentCombo * 50);
         totalScore += pointEarned;
 
         document.getElementById('feedback-panel').className = "p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
         document.getElementById('feedback-icon').textContent = "⭕";
-        document.getElementById('feedback-title').textContent = "正解 (修正済)";
-        document.getElementById('feedback-point').innerHTML = `<span class="text-sm font-black font-mono text-emerald-400 combo-anim inline-block ml-2">+${pointEarned}pt</span>`;
+        document.getElementById('feedback-title').textContent = "正解 (修正)";
+        document.getElementById('feedback-point').textContent = `+${pointEarned}pt`;
+        document.getElementById('feedback-point').className = "text-sm font-black font-mono text-emerald-400 combo-anim inline-block ml-2";
         document.getElementById('override-btn').classList.add('hidden');
         
         updateScoreUI();
@@ -870,24 +832,18 @@
     window.goToNextQuestion = function() {
         playSound('click');
         activeIndex++;
-        
         if(isMultiplayer) {
-            if(roomSettings.gameType === 'count' && activeIndex >= roomSettings.maxQuestions) {
+            if(roomSettings.gameType === 'count' && activeIndex >= activeQuestions.length) {
                 finishMultiGameSelf();
-            } else if (roomSettings.gameType === 'time' && activeIndex >= activeQuestions.length) {
-                // 問題が不足した場合はループで補完
-                activeQuestions.push(activeQuestions[activeIndex % activeQuestions.length]);
-                loadQuestion();
-            } else {
-                loadQuestion();
-            }
+            } else if (activeIndex >= activeQuestions.length) {
+                finishMultiGameSelf();
+            } else { loadQuestion(); }
         } else {
             if (activeIndex < activeQuestions.length) loadQuestion();
             else showResultSingle();
         }
     };
 
-    // --- マルチプレイの同期と終了判定 ---
     function sendProgress() {
         if(!isMultiplayer || !currentRoomId) return;
         updateDoc(getRoomDoc(currentRoomId), {
@@ -898,22 +854,18 @@
     }
 
     function updateMultiScoreboard() {
-        const board = document.getElementById('multi-scoreboard-list');
+        const board = document.getElementById('multi-scoreboard');
         board.innerHTML = "";
-        
         const sortedPlayers = Object.values(roomPlayers).sort((a,b) => b.score - a.score);
-        document.getElementById('in-game-player-count').textContent = sortedPlayers.length; // リアルタイム人数
-
         sortedPlayers.forEach((p, idx) => {
             const isMe = p.name === myPlayerName ? "border-emerald-500 bg-emerald-900/40" : "border-slate-700 bg-slate-800";
             const comboText = p.combo >= 2 ? `<span class="text-[10px] text-orange-400 ml-1">🔥${p.combo}</span>` : "";
             const finishedText = p.isFinished ? `<span class="text-[10px] text-slate-400 ml-1">FIN</span>` : "";
             
             board.innerHTML += `
-                <div class="px-3 py-1.5 rounded-lg border ${isMe} flex items-center gap-2 whitespace-nowrap shadow-sm">
+                <div class="px-3 py-1.5 rounded-lg border ${isMe} flex items-center gap-2 whitespace-nowrap">
                     <span class="text-xs font-bold text-slate-300">${idx+1}. ${escapeHTML(p.name)}</span>
                     <span class="text-xs font-black text-amber-400 font-mono">${p.score}pt</span>
-                    <span class="text-[10px] text-slate-400">(${p.progress}問)</span>
                     ${comboText} ${finishedText}
                 </div>
             `;
@@ -926,11 +878,10 @@
         
         updateDoc(getRoomDoc(currentRoomId), {
             [`players.${myUid}.isFinished`]: true,
-            [`players.${myUid}.score`]: totalScore,
-            [`players.${myUid}.progress`]: activeIndex
+            [`players.${myUid}.score`]: totalScore
         }).catch(e=>console.log(e));
 
-        document.getElementById('quiz-question').textContent = "お疲れ様でした！他のプレイヤーが終わるのを待っています...";
+        document.getElementById('quiz-question').textContent = "全員が終了するのを待っています...";
         document.getElementById('user-answer').disabled = true;
         document.getElementById('submit-btn').classList.add('hidden');
         document.getElementById('next-btn').classList.add('hidden');
@@ -943,27 +894,22 @@
         for(let uid in data.players) {
             if(!data.players[uid].isFinished) allFin = false;
         }
-        
-        // 全員終了 または すでに finished 状態ならリザルトへ
-        if(allFin || data.status === 'finished') {
-            if(isHost && data.status !== 'finished') {
-                updateDoc(getRoomDoc(currentRoomId), { status: 'finished' }).catch(e=>console.log(e));
+        if(allFin && data.status !== 'finished') {
+            if(isHost) {
+                updateDoc(getRoomDoc(currentRoomId), { status: 'finished' });
             }
-            if(document.getElementById('result-screen').classList.contains('hidden')) {
-                showResultMulti();
-            }
+        }
+        if(data.status === 'finished' && document.getElementById('result-screen').classList.contains('hidden')) {
+            showResultMulti();
         }
     }
 
-    // --- 結果表示 ---
     function showResultSingle() {
         document.getElementById('result-multi-ranking').classList.add('hidden');
         document.getElementById('result-single-stats').classList.remove('hidden');
-
         document.getElementById('result-final-score').textContent = totalScore;
         document.getElementById('result-correct-count').textContent = `${correctCount} / ${activeQuestions.length}`;
         document.getElementById('result-max-combo').textContent = maxCombo;
-
         switchScreen('play-screen', 'result-screen');
     }
 
@@ -974,33 +920,24 @@
         document.getElementById('result-single-stats').classList.add('hidden');
         const rankingContainer = document.getElementById('result-multi-ranking');
         rankingContainer.classList.remove('hidden');
-        
-        const rList = document.getElementById('result-ranking-list');
-        rList.innerHTML = "";
+        rankingContainer.innerHTML = "";
 
         const sorted = Object.values(roomPlayers).sort((a,b) => b.score - a.score);
-        document.getElementById('result-player-count').textContent = sorted.length;
-
         sorted.forEach((p, idx) => {
             let medal = `<span class="w-6 h-6 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-xs">${idx+1}</span>`;
             if(idx===0) medal = `<span class="w-6 h-6 rounded-full bg-amber-400 text-slate-900 font-bold flex items-center justify-center"><i data-lucide="medal" class="w-3.5 h-3.5"></i></span>`;
-            
             const isMe = p.name === myPlayerName ? "bg-emerald-900/30 border-emerald-500/50" : "bg-slate-800/50 border-slate-700";
             
-            rList.innerHTML += `
+            rankingContainer.innerHTML += `
                 <div class="flex justify-between items-center p-3 rounded-xl border ${isMe}">
                     <div class="flex items-center gap-3">
                         ${medal}
-                        <div>
-                            <span class="font-bold text-slate-200 block leading-tight">${escapeHTML(p.name)}</span>
-                            <span class="text-[10px] text-slate-400">${p.progress}問解答 / 最大${p.combo}コンボ</span>
-                        </div>
+                        <span class="font-bold text-slate-200">${escapeHTML(p.name)}</span>
                     </div>
-                    <span class="text-xl font-black text-amber-400 font-mono">${p.score} <span class="text-xs">pt</span></span>
+                    <span class="text-lg font-black text-amber-400 font-mono">${p.score} <span class="text-xs">pt</span></span>
                 </div>
             `;
         });
-        
         switchScreen('play-screen', 'result-screen');
         lucide.createIcons();
     }
