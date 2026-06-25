@@ -54,8 +54,8 @@
 
     <div id="menu-screen" class="space-y-6 relative z-10 hidden">
         
-        <div class="bg-gradient-to-r from-emerald-900/40 to-slate-800/40 border border-emerald-500/30 p-5 rounded-2xl">
-            <div class="flex items-center gap-2 mb-4">
+        <div class="bg-gradient-to-r from-emerald-900/40 to-slate-800/40 border border-emerald-500/30 p-5 rounded-2xl space-y-4">
+            <div class="flex items-center gap-2 mb-2">
                 <i data-lucide="swords" class="w-6 h-6 text-emerald-400"></i>
                 <h2 class="text-emerald-400 font-black text-lg">オンライン対戦ルーム</h2>
             </div>
@@ -69,7 +69,21 @@
                 </div>
                 <div class="w-full flex gap-2">
                     <input type="text" id="join-room-id" placeholder="ルームID" maxlength="5" class="w-full uppercase bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500">
-                    <button onclick="joinRoom()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2.5 rounded-xl transition-all whitespace-nowrap">参加</button>
+                    <button onclick="joinRoom()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2.5 rounded-xl transition-all whitespace-nowrap">IDで参加</button>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-4">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-xs font-bold text-slate-400 flex items-center gap-1.5">
+                        <i data-lucide="search" class="w-3.5 h-3.5 text-emerald-400"></i> 待機中の部屋から探す
+                    </h3>
+                    <button onclick="refreshRoomsList()" class="text-[10px] text-emerald-400 hover:text-emerald-300 flex items-center gap-1 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 transition-all">
+                        <i data-lucide="refresh-cw" class="w-3 h-3"></i> 一覧を更新
+                    </button>
+                </div>
+                <div id="available-rooms-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-1">
+                    <p class="text-xs text-slate-500 col-span-2 py-4 text-center">部屋を読み込み中...</p>
                 </div>
             </div>
         </div>
@@ -268,9 +282,10 @@
 </div>
 
 <script type="module">
-    // --- Firebase Init (Rule 3: Auth Before Queries, Rule 1: Strict Paths) ---
+    // --- Firebase Init ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+    // 部屋を横断検索するために query, where, getDocs をインポートに追加
+    import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, onSnapshot, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
     const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
@@ -299,6 +314,7 @@
             document.getElementById('loading-overlay').classList.add('hidden');
             document.getElementById('menu-screen').classList.remove('hidden');
             drawMenu();
+            refreshRoomsList(); // ログイン成功時に部屋一覧を自動読み込み
         } catch (e) {
             console.error("Auth error", e);
             document.getElementById('loading-overlay').innerHTML = "<p class='text-rose-500 font-bold'>認証エラーが発生しました。</p>";
@@ -313,9 +329,9 @@
         return doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
     }
 
-    // --- 完全網羅問題データベース (いつ・だれが・なにを) ---
+    // --- 完全網羅問題データベース ---
     const quizDatabase = {
-        1: [ // アヘン戦争・清・インド
+        1: [
             { q: "イギリスがインド産アヘンを清に密輸した3国間の貿易を何というか？", ans: ["三角貿易", "さんかくぼうえき"], exp: "茶の輸入赤字を埋めるために行われました。" },
             { q: "イギリスが清から大量輸入し、三角貿易を始める原因となった嗜好品は？", ans: ["お茶", "茶", "ちゃ"], exp: "イギリスで紅茶の習慣が流行しました。" },
             { q: "アヘン戦争が勃発した年は西暦何年か？", ans: ["1840年", "1840"], exp: "清の林則徐がアヘンを没収したことが発端です。" },
@@ -328,7 +344,7 @@
             { q: "1857年にインドの傭兵が起こした反乱（インド大反乱）のきっかけとなった傭兵の呼び名は？", ans: ["セポイ", "せぽい", "シパーヒー"], exp: "セポイの乱とも呼ばれます。" },
             { q: "セポイの乱（インド大反乱）が起きたのは西暦何年か？", ans: ["1857年", "1857"], exp: "イギリス東インド会社に対する民族的反乱です。" }
         ],
-        2: [ // 開国と幕末
+        2: [
             { q: "1853年に4隻の軍艦（黒船）を率いて浦賀に来航したアメリカの軍人は誰か？", ans: ["ペリー", "ぺりー"], exp: "東インド艦隊司令長官として開国を迫りました。" },
             { q: "ペリーが浦賀に来航したのは西暦何年か？", ans: ["1853年", "1853"], exp: "幕末の動乱の始まりです。" },
             { q: "1853年、ペリーの黒船が来航した神奈川県の地名はどこか？", ans: ["浦賀", "うらが"], exp: "江戸に近い三浦半島に現れました。" },
@@ -343,7 +359,7 @@
             { q: "大政奉還を行った江戸幕府最後の将軍は誰か？", ans: ["徳川慶喜", "とくがわよしのぶ"], exp: "討幕派に先手を打つ形で行われました。" },
             { q: "大政奉還が行われたのは西暦何年か？", ans: ["1867年", "1867"], exp: "翌年に戊辰戦争が始まります。" }
         ],
-        3: [ // 明治維新と三大改革
+        3: [
             { q: "1868年に出された、明治新政府の新しい政治の方針を示す宣言は何か？", ans: ["五箇条の御誓文", "ごかじょうのごせいもん"], exp: "天皇が神に誓う形で出されました。" },
             { q: "1869年、諸藩の藩主に土地（版）と人民（籍）を天皇へ返させた改革は何か？", ans: ["版籍奉還", "はんせきほうかん"], exp: "形式的ですが主権が政府に移りました。" },
             { q: "版籍奉還が行われたのは西暦何年か？", ans: ["1869年", "1869"], exp: "廃藩置県の前段階の改革です。" },
@@ -355,7 +371,7 @@
             { q: "地租改正、および徴兵令が実施されたのはともに西暦何年か？", ans: ["1873年", "1873"], exp: "明治の三大改革が実行に移された年です。" },
             { q: "地租改正において、土地の所有権と地価を証明するために発行された証書は何か？", ans: ["地券", "ちけん"], exp: "納税の義務を負う証明書でもありました。" }
         ],
-        4: [ // 近代的な国際関係と領土確定
+        4: [
             { q: "1871年、条約改正打診と欧米視察のために派遣された特命全権大使は誰か？", ans: ["岩倉具視", "いわくらともみ"], exp: "右大臣。岩倉使節団の代表です。" },
             { q: "岩倉具視を大使とする使節団（岩倉使節団）が派遣されたのは西暦何年か？", ans: ["1871年", "1871"], exp: "大久保利通や伊藤博文らも同行しました。" },
             { q: "1871年に結ばれた、日本と清国の間の対等な条約は何か？", ans: ["日清修好条規", "にちしんしゅうこうじょうき"], exp: "東アジアにおける新たな近代条約でした。" },
@@ -365,18 +381,18 @@
             { q: "1879年、明治政府が軍事力を背景に琉球藩を廃止し、沖縄県を設置した処分は何か？", ans: ["琉球処分", "りゅうきゅうしょぶん"], exp: "琉球王国は消滅し、清国との関係が悪化しました。" },
             { q: "琉球処分が行われ、沖縄県が正式に設置されたのは西暦何年か？", ans: ["1879年", "1879"], exp: "処分官・松田道之らによって断行されました。" }
         ],
-        5: [ // 日清・日露戦争と条約改正
+        5: [
             { q: "1886年、イギリス船が沈没し、日本人乗客全員が見殺しにされた事件は何か？", ans: ["ノルマントン号事件", "のるまんとんごうじけん"], exp: "領事裁判権に対する国民の怒りが爆発しました。" },
             { q: "1894年、イギリスとの間で領事裁判権（治外法権）の撤廃に成功した外務大臣は誰か？", ans: ["陸奥宗光", "むつむねみつ"], exp: "日清戦争直前の外交的勝利です。" },
             { q: "陸奥宗光が領事裁判権の撤廃に成功した「日英通商航海条約」は何年に結ばれたか？", ans: ["1894年", "1894"], exp: "半世紀ぶりの悲願達成の一部です。" },
             { q: "日清戦争後に結ばれた講和条約（下関条約）で、日本が割譲を受けた半島はどこか？", ans: ["遼東半島", "りょうとうはんとう", "リャオトン"], exp: "しかし直後に三国干渉を受けます。" },
-            { q: "1895年、下関条約の直後にロシア・フランス・ドイツが遼東半島の返還を迫った事件は？", ans: ["三国干渉", "さんごくかんしょう"], exp: "日本は臥薪嘗胆を誓い、ロシアへの敵意を強めしました。" },
+            { q: "1895年、下関条約の直後にロシア・フランス・ドイツが遼東半島の返還を迫った事件は？", ans: ["三国干渉", "さんごくかんしょう"], exp: "日本は臥薪嘗胆を誓い、ロシアへの敵意を強めました。" },
             { q: "1902年、ロシアのアジア進出に対抗するため、日本がイギリスと結んだ同盟は何か？", ans: ["日英同盟", "にちえいどうめい"], exp: "これにより日本は日露戦争への後ろ盾を得ました。" },
             { q: "1905年、日露戦争の講和条約（ポーツマス条約）で賠償金が取れず、東京で起きた暴動は何か？", ans: ["日比谷焼き打ち事件", "ひびややきうちじけん"], exp: "国民の強い不満が爆発しました。" },
             { q: "1911年、関税自主権の完全回復に成功し、不平等条約の改正を完了させた外務大臣は誰か？", ans: ["小村寿太郎", "こむらじゅたろう"], exp: "日本の法的な完全独立が達成されました。" },
             { q: "小村寿太郎によって関税自主権が完全に回復したのは西暦何年か？", ans: ["1911年", "1911"], exp: "明治時代の終盤の出来事です。" }
         ],
-        6: [ // 韓国・中国革命、産業革命
+        6: [
             { q: "1905年、日本が韓国の外交権を奪って設置し、初代統監に伊藤博文が就任した機関は何か？", ans: ["統監府", "とうかんふ"], exp: "韓国は保護国化されました。" },
             { q: "1910年、日本が韓国を完全に植民地として編入した出来事を何というか？", ans: ["韓国併合", "かんこくへいごう", "日韓併合"], exp: "朝鮮総督府が置かれました。" },
             { q: "韓国併合が行われたのは西暦何年か？", ans: ["1910年", "1910"], exp: "武力による苛烈な支配が始まりました。" },
@@ -389,7 +405,7 @@
             { q: "破傷風の血清療法を開発した、日本の近代医学界の巨星である医学者は誰か？", ans: ["北里柴三郎", "きたさとしばさぶろう"], exp: "ペスト菌の発見も行いました。" },
             { q: "黄熱病の研究のためにアフリカへ渡り、自らも病に倒れた有名な細菌学者は誰か？", ans: ["野口英世", "のぐちひでよ"], exp: "世界各地で感染症研究に尽力しました。" }
         ],
-        7: [ // 第一次世界大戦・大正デモクラシー
+        7: [
             { q: "1914年、オーストリア皇太子が暗殺され、第一次世界大戦の火種となった事件は何か？", ans: ["サラエボ事件", "さらえぼじけん"], exp: "複雑な同盟が発動し世界大戦へ発展しました。" },
             { q: "第一次世界大戦の直接の契機となったサラエボ事件が起きたのは西暦何年か？", ans: ["1914年", "1914"], exp: "1918年まで続く未曾有の総力戦の始まりです。" },
             { q: "1915年、日本が中国の袁世凱政府に対して突きつけた不当な利権要求は何か？", ans: ["二十一か条の要求", "にじゅういちかじょうのようきゅう"], exp: "ヨーロッパ大戦の隙を突いて行われました。" },
@@ -400,7 +416,7 @@
             { q: "1918年、米価高騰に怒った富山県の主婦らの抗議から全国へ波及した暴動事件は何か？", ans: ["米騒動", "こめそうどう"], exp: "寺内正毅内閣が総辞職しました。" },
             { q: "1918年、米騒動のあとに日本初の本格的な政党内閣を組織した「平民宰相」は誰か？", ans: ["原敬", "はらたかし", "はらけい"], exp: "立憲政友会総裁として首相になりました。" },
             { q: "1920年、平塚らいてうや市川房枝らが設立し、女性参政権を求めた組織は何か？", ans: ["新婦人協会", "しんふじんきょうかい"], exp: "女性の政治活動の自由を求めました。" },
-            { q: "1922年、被差別部落の解放と平点を求めて結成された人権運動組織は何か？", ans: ["全国水平社", "ぜんこくすいへいしゃ"], exp: "「人の世に熱あれ、人間に光あれ」と宣言しました。" },
+            { q: "1922年、被差別部落の解放と平等を求めて結成された人権運動組織は何か？", ans: ["全国水平社", "ぜんこくすいへいしゃ"], exp: "「人の世に熱あれ、人間に光あれ」と宣言しました。" },
             { q: "1925年、満25歳以上のすべての男子に参政権を与えた法律は何か？", ans: ["普通選挙法", "ふつうせんきょほう"], exp: "納税額による制限が撤廃されました。" },
             { q: "1925年、普通選挙法と同時に制定され、社会主義思想などを弾圧した法律は何か？", ans: ["治安維持法", "ちあんいじほう"], exp: "国体の変革を企てる者を厳罰に処しました。" },
             { q: "普通選挙法および治安維持法が制定されたのは、ともに西暦何年か？", ans: ["1925年", "1925"], exp: "ラジオ放送が開始されたのも同じ年です。" },
@@ -454,13 +470,11 @@
     let activeQuestions = [];
     let activeIndex = 0;
     
-    // スコア管理
     let totalScore = 0;
     let correctCount = 0;
     let currentCombo = 0;
     let maxCombo = 0;
 
-    // タイマー管理
     let qTimerId = null;
     let qTimerMax = 30;
     let qTimerVal = 30;
@@ -469,7 +483,6 @@
     let gTimerMax = 0;
     let gTimerVal = 0;
     
-    // マルチステート
     let currentRoomId = null;
     let unsubscribeRoom = null;
     let isHost = false;
@@ -477,7 +490,7 @@
     let roomPlayers = {};
 
     // --- メニュー描画 ---
-    const modeNames = {1:"第1モード", 2:"第2モード", 3:"第3モード", 4:"第4モード", 5:"第5モード", 6:"第6モード", 7:"第7モード"};
+    const modeNames = {1:"第1モード", 2:"第2モード", 3:"第3モード", 4:"第4モード", 5:"第5モード", 6:"第6モード", 7:"第7モード", 8:"全範囲ランダム"};
     function drawMenu() {
         const container = document.getElementById('modes-list');
         container.innerHTML = "";
@@ -523,12 +536,58 @@
         loadQuestion();
     };
 
-    // --- 2. マルチプレイ (部屋作成・参加) ---
+    // --- 2. マルチプレイ (部屋作成・一覧取得・参加) ---
+    // ① 全部屋を探索して一覧表示する機能
+    window.refreshRoomsList = async function() {
+        const container = document.getElementById('available-rooms-list');
+        container.innerHTML = `<p class="text-xs text-slate-500 col-span-2 py-4 text-center animate-pulse">部屋を探しています...</p>`;
+        
+        try {
+            // ステータスが 'waiting' (待機中) の部屋を検索
+            const q = query(getRoomsRef(), where("status", "==", "waiting"));
+            const querySnapshot = await getDocs(q);
+            
+            container.innerHTML = "";
+            if (querySnapshot.empty) {
+                container.innerHTML = `<p class="text-xs text-slate-500 col-span-2 py-4 text-center">現在、待機中の部屋はありません。</p>`;
+                return;
+            }
+            
+            querySnapshot.forEach((roomDoc) => {
+                const roomId = roomDoc.id;
+                const data = roomDoc.data();
+                const players = data.players || {};
+                const pCount = Object.keys(players).length;
+                const hostName = players[data.hostUid]?.name || "ホスト";
+                const modeNum = data.settings?.quizMode || "8";
+                const modeLabel = modeNames[modeNum] || "全範囲";
+                
+                container.innerHTML += `
+                    <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 hover:border-emerald-500/50 transition-all flex justify-between items-center text-xs fade-in">
+                        <div class="space-y-0.5">
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-mono font-black text-emerald-400 tracking-wider">${roomId}</span>
+                                <span class="text-slate-300 text-[11px]">(${escapeHTML(hostName)} の部屋)</span>
+                            </div>
+                            <div class="text-[10px] text-slate-500">${modeLabel} / ${pCount}人参戦中</div>
+                        </div>
+                        <button onclick="joinRoomById('${roomId}')" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white font-bold px-3 py-1.5 rounded-lg border border-emerald-500/30 transition-all">
+                            入室
+                        </button>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        } catch (e) {
+            console.error("Error fetching rooms:", e);
+            container.innerHTML = `<p class="text-xs text-rose-400 col-span-2 py-4 text-center">一覧の取得に失敗しました。</p>`;
+        }
+    };
+
     window.createRoom = async function() {
         playSound('click');
         const name = document.getElementById('player-name-input').value.trim();
-        if(!name) return alert("名前を入力してください");
-        myPlayerName = name;
+        myPlayerName = name || "ゲスト";
         document.getElementById('player-name-display').textContent = myPlayerName;
         document.getElementById('player-name-display').classList.remove('hidden');
 
@@ -547,12 +606,18 @@
         } catch(e) { console.error(e); alert("部屋の作成に失敗しました。"); }
     };
 
+    // ② ルームID手動入力での参加処理
     window.joinRoom = async function() {
+        const rId = document.getElementById('join-room-id').value.trim().toUpperCase();
+        if(!rId) return alert("ルームIDを入力してください");
+        joinRoomById(rId);
+    };
+
+    // 共通の入室コアロジック
+    window.joinRoomById = async function(rId) {
         playSound('click');
         const name = document.getElementById('player-name-input').value.trim();
-        const rId = document.getElementById('join-room-id').value.trim().toUpperCase();
-        if(!name || !rId) return alert("名前とルームIDを入力してください");
-        myPlayerName = name;
+        myPlayerName = name || "ゲスト";
         document.getElementById('player-name-display').textContent = myPlayerName;
         document.getElementById('player-name-display').classList.remove('hidden');
 
@@ -588,24 +653,15 @@
             roomSettings = data.settings;
             roomPlayers = data.players || {};
             
-            // 参加者リスト更新（ソート処理を追加）
             const listEl = document.getElementById('lobby-players-list');
             listEl.innerHTML = "";
-            
-            const sortedPlayers = Object.entries(roomPlayers).sort((a, b) => {
-                if (a[0] === data.hostUid) return -1;
-                if (b[0] === data.hostUid) return 1;
-                return a[1].name.localeCompare(b[1].name);
-            });
-
             let pCount = 0;
-            sortedPlayers.forEach(([uid, player]) => {
+            for(let uid in roomPlayers) {
                 pCount++;
                 const isMe = uid === myUid ? " (あなた)" : "";
                 const isHostIcon = uid === data.hostUid ? `<i data-lucide="crown" class="w-3 h-3 text-amber-400"></i>` : "";
-                listEl.innerHTML += `<li class="bg-slate-900 px-3 py-2 rounded-lg text-sm text-slate-300 font-bold border border-slate-700 flex items-center gap-2">${isHostIcon} ${escapeHTML(player.name)} <span class="text-emerald-500">${isMe}</span></li>`;
-            });
-            
+                listEl.innerHTML += `<li class="bg-slate-900 px-3 py-2 rounded-lg text-sm text-slate-300 font-bold border border-slate-700 flex items-center gap-2">${isHostIcon} ${escapeHTML(roomPlayers[uid].name)} <span class="text-emerald-500">${isMe}</span></li>`;
+            }
             document.getElementById('lobby-player-count').textContent = pCount;
             lucide.createIcons();
 
@@ -698,8 +754,10 @@
         if(unsubscribeRoom) unsubscribeRoom();
         if(msg) alert(msg);
         switchScreen('lobby-screen', 'menu-screen');
+        refreshRoomsList(); // メニューに戻る際、部屋一覧をリフレッシュする
     };
 
+    // --- 3. クイズ進行ロジック ---
     function loadQuestion() {
         if(qTimerId) clearInterval(qTimerId);
         document.getElementById('feedback-panel').classList.add('hidden');
@@ -794,6 +852,7 @@
         document.getElementById('feedback-explanation').textContent = currentQ.exp || "";
         
         updateScoreUI();
+        
         if(isMultiplayer) sendProgress();
         else document.getElementById('next-btn').focus();
     }
@@ -832,18 +891,22 @@
     window.goToNextQuestion = function() {
         playSound('click');
         activeIndex++;
+        
         if(isMultiplayer) {
             if(roomSettings.gameType === 'count' && activeIndex >= activeQuestions.length) {
                 finishMultiGameSelf();
-            } else if (activeIndex >= activeQuestions.length) {
+            } 
+            else if (activeIndex >= activeQuestions.length) {
                 finishMultiGameSelf();
-            } else { loadQuestion(); }
+            }
+            else { loadQuestion(); }
         } else {
             if (activeIndex < activeQuestions.length) loadQuestion();
             else showResultSingle();
         }
     };
 
+    // --- マルチプレイの同期と終了判定 ---
     function sendProgress() {
         if(!isMultiplayer || !currentRoomId) return;
         updateDoc(getRoomDoc(currentRoomId), {
@@ -856,6 +919,7 @@
     function updateMultiScoreboard() {
         const board = document.getElementById('multi-scoreboard');
         board.innerHTML = "";
+        
         const sortedPlayers = Object.values(roomPlayers).sort((a,b) => b.score - a.score);
         sortedPlayers.forEach((p, idx) => {
             const isMe = p.name === myPlayerName ? "border-emerald-500 bg-emerald-900/40" : "border-slate-700 bg-slate-800";
@@ -894,22 +958,27 @@
         for(let uid in data.players) {
             if(!data.players[uid].isFinished) allFin = false;
         }
+        
         if(allFin && data.status !== 'finished') {
             if(isHost) {
                 updateDoc(getRoomDoc(currentRoomId), { status: 'finished' });
             }
         }
+        
         if(data.status === 'finished' && document.getElementById('result-screen').classList.contains('hidden')) {
             showResultMulti();
         }
     }
 
+    // --- 結果表示 ---
     function showResultSingle() {
         document.getElementById('result-multi-ranking').classList.add('hidden');
         document.getElementById('result-single-stats').classList.remove('hidden');
+
         document.getElementById('result-final-score').textContent = totalScore;
         document.getElementById('result-correct-count').textContent = `${correctCount} / ${activeQuestions.length}`;
         document.getElementById('result-max-combo').textContent = maxCombo;
+
         switchScreen('play-screen', 'result-screen');
     }
 
@@ -923,9 +992,11 @@
         rankingContainer.innerHTML = "";
 
         const sorted = Object.values(roomPlayers).sort((a,b) => b.score - a.score);
+        
         sorted.forEach((p, idx) => {
             let medal = `<span class="w-6 h-6 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-xs">${idx+1}</span>`;
             if(idx===0) medal = `<span class="w-6 h-6 rounded-full bg-amber-400 text-slate-900 font-bold flex items-center justify-center"><i data-lucide="medal" class="w-3.5 h-3.5"></i></span>`;
+            
             const isMe = p.name === myPlayerName ? "bg-emerald-900/30 border-emerald-500/50" : "bg-slate-800/50 border-slate-700";
             
             rankingContainer.innerHTML += `
@@ -938,6 +1009,7 @@
                 </div>
             `;
         });
+        
         switchScreen('play-screen', 'result-screen');
         lucide.createIcons();
     }
@@ -947,6 +1019,7 @@
         if(unsubscribeRoom) unsubscribeRoom();
         currentRoomId = null; isHost = false;
         switchScreen('result-screen', 'menu-screen');
+        refreshRoomsList(); // メニューに戻る際、部屋一覧をリフレッシュする
     };
 
     window.handleEnterKey = (e) => { 
